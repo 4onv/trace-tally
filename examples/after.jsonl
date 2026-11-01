@@ -1,0 +1,10 @@
+{"type":"tool_start","id":"synthetic-after-1","name":"Read","timestamp":"2026-01-01T13:00:00.000Z","arguments":{"path":"/SYNTHETIC_PRIVATE_PATH/billing.mjs"}}
+{"type":"tool_end","id":"synthetic-after-1","status":"success","timestamp":"2026-01-01T13:00:00.100Z","result":"SYNTHETIC_PRIVATE_FILE_CONTENT"}
+{"type":"tool_start","id":"synthetic-after-2","name":"Grep","timestamp":"2026-01-01T13:00:00.200Z","arguments":{"pattern":"SYNTHETIC_PRIVATE_SEARCH"}}
+{"type":"tool_end","id":"synthetic-after-2","status":"success","timestamp":"2026-01-01T13:00:00.280Z","result":"SYNTHETIC_PRIVATE_SEARCH_RESULTS"}
+{"type":"tool_start","id":"synthetic-after-3","name":"Edit","timestamp":"2026-01-01T13:00:00.400Z","arguments":{"replacement":"SYNTHETIC_PRIVATE_SOURCE_CODE"}}
+{"type":"tool_end","id":"synthetic-after-3","status":"success","timestamp":"2026-01-01T13:00:00.580Z","result":"SYNTHETIC_PRIVATE_EDIT_OUTPUT"}
+{"type":"tool_start","id":"synthetic-after-4","name":"Bash","timestamp":"2026-01-01T13:00:00.700Z","arguments":{"command":"SYNTHETIC_PRIVATE_TEST_COMMAND"}}
+{"type":"tool_end","id":"synthetic-after-4","status":"success","timestamp":"2026-01-01T13:00:01.900Z","result":"SYNTHETIC_PRIVATE_TEST_LOG"}
+{"type":"tool_start","id":"synthetic-after-5","name":"Task","timestamp":"2026-01-01T13:00:02.000Z","arguments":{"prompt":"SYNTHETIC_PRIVATE_AGENT_PROMPT"}}
+{"type":"tool_end","id":"synthetic-after-5","status":"error","timestamp":"2026-01-01T13:00:04.200Z","result":"SYNTHETIC_PRIVATE_AGENT_FAILURE"}

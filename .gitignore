@@ -1,0 +1,8 @@
+node_modules/
+.trace-tally/
+.env
+.env.*
+*.log
+*.tgz
+Thumbs.db
+.DS_Store

@@ -1,0 +1,16 @@
+{"type":"tool_start","id":"synthetic-before-1","name":"Read","timestamp":"2026-01-01T12:00:00.000Z","arguments":{"path":"/SYNTHETIC_PRIVATE_PATH/billing.mjs"},"text":"SYNTHETIC_PRIVATE_PROMPT"}
+{"type":"tool_end","id":"synthetic-before-1","status":"success","timestamp":"2026-01-01T12:00:00.120Z","result":"SYNTHETIC_PRIVATE_FILE_CONTENT"}
+{"type":"tool_start","id":"synthetic-before-2","name":"Bash","timestamp":"2026-01-01T12:00:00.200Z","arguments":{"command":"SYNTHETIC_PRIVATE_COMMAND"}}
+{"type":"tool_end","id":"synthetic-before-2","status":"error","timestamp":"2026-01-01T12:00:01.600Z","result":"SYNTHETIC_PRIVATE_ERROR_DETAILS"}
+{"type":"tool_start","id":"synthetic-before-3","name":"Bash","timestamp":"2026-01-01T12:00:01.700Z","arguments":{"command":"SYNTHETIC_PRIVATE_COMMAND_RETRY"}}
+{"type":"tool_end","id":"synthetic-before-3","status":"error","timestamp":"2026-01-01T12:00:03.500Z","result":"SYNTHETIC_PRIVATE_ERROR_DETAILS"}
+{"type":"tool_start","id":"synthetic-before-4","name":"Grep","timestamp":"2026-01-01T12:00:03.600Z","arguments":{"pattern":"SYNTHETIC_PRIVATE_SEARCH"}}
+{"type":"tool_end","id":"synthetic-before-4","status":"success","timestamp":"2026-01-01T12:00:03.690Z","result":"SYNTHETIC_PRIVATE_SEARCH_RESULTS"}
+{"type":"tool_start","id":"synthetic-before-5","name":"Edit","timestamp":"2026-01-01T12:00:03.800Z","arguments":{"replacement":"SYNTHETIC_PRIVATE_SOURCE_CODE"}}
+{"type":"tool_end","id":"synthetic-before-5","status":"success","timestamp":"2026-01-01T12:00:04.030Z","result":"SYNTHETIC_PRIVATE_EDIT_OUTPUT"}
+{"type":"tool_start","id":"synthetic-before-6","name":"Bash","timestamp":"2026-01-01T12:00:04.100Z","arguments":{"command":"SYNTHETIC_PRIVATE_TEST_COMMAND"}}
+{"type":"tool_end","id":"synthetic-before-6","status":"success","timestamp":"2026-01-01T12:00:05.700Z","result":"SYNTHETIC_PRIVATE_TEST_LOG"}
+{"type":"tool_start","id":"synthetic-before-7","name":"WebFetch","timestamp":"2026-01-01T12:00:05.800Z","arguments":{"url":"https://example.invalid/SYNTHETIC_PRIVATE_URL"}}
+{"type":"tool_end","id":"synthetic-before-7","status":"error","timestamp":"2026-01-01T12:00:06.700Z","result":"SYNTHETIC_PRIVATE_WEB_OUTPUT"}
+{"type":"tool_start","id":"synthetic-before-8","name":"SYNTHETIC_PRIVATE_TOOL_ENDPOINT","timestamp":"2026-01-01T12:00:06.800Z","arguments":{"credential":"SYNTHETIC_PRIVATE_CREDENTIAL"}}
+{"type":"tool_end","id":"synthetic-before-8","status":"success","timestamp":"2026-01-01T12:00:09.800Z","result":"SYNTHETIC_PRIVATE_CUSTOM_RESULT"}

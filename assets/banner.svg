@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">TraceTally</title>
+  <desc id="desc">Compare agent tool activity without sharing transcript contents. Local, metadata only, zero dependencies.</desc>
+  <rect width="1200" height="360" rx="16" fill="#f5f3eb"/>
+  <path d="M55 288H1145" stroke="#dcded2"/>
+  <g stroke="#315ddd" stroke-width="7"><path d="M62 90V66M77 90V48M92 90V72M107 90V38"/></g>
+  <text x="55" y="163" fill="#20241f" font-family="Arial,Helvetica,sans-serif" font-size="65" font-weight="700" letter-spacing="-3">TraceTally</text>
+  <text x="57" y="209" fill="#76796f" font-family="Arial,Helvetica,sans-serif" font-size="23">Show the work pattern. Keep the work private.</text>
+  <text x="58" y="322" fill="#315ddd" font-family="monospace" font-size="13" letter-spacing="2">LOCAL · METADATA ONLY · ZERO DEPENDENCIES</text>
+  <g transform="translate(755 56)">
+    <rect width="390" height="201" rx="10" fill="#fffef9" stroke="#dcded2"/>
+    <text x="26" y="33" fill="#76796f" font-family="monospace" font-size="10" letter-spacing="1">TOOL ACTIVITY / BEFORE → AFTER</text>
+    <text x="26" y="76" fill="#20241f" font-family="Arial,Helvetica,sans-serif" font-size="12">Shell</text>
+    <rect x="95" y="59" width="215" height="8" rx="2" fill="#929b87"/><rect x="95" y="73" width="130" height="8" rx="2" fill="#315ddd"/>
+    <text x="26" y="119" fill="#20241f" font-family="Arial,Helvetica,sans-serif" font-size="12">Read</text>
+    <rect x="95" y="103" width="140" height="8" rx="2" fill="#929b87"/><rect x="95" y="117" width="174" height="8" rx="2" fill="#315ddd"/>
+    <text x="26" y="163" fill="#20241f" font-family="Arial,Helvetica,sans-serif" font-size="12">Write</text>
+    <rect x="95" y="147" width="92" height="8" rx="2" fill="#929b87"/><rect x="95" y="161" width="112" height="8" rx="2" fill="#315ddd"/>
+  </g>
+</svg>
