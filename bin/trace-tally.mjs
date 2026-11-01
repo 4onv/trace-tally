@@ -41,7 +41,7 @@ async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     help: { type: 'boolean' }, version: { type: 'boolean' }, out: { type: 'string' }, format: { type: 'string' }, 'fail-on-more-errors': { type: 'boolean' }
   } });
-  if (values.version) { console.log('0.1.0'); return; }
+  if (values.version) { console.log('0.2.0'); return; }
   if (values.help || !positionals.length) { console.log(help); return; }
   const [command, ...inputs] = positionals;
   const counts = { demo: 0, compare: 2, inspect: 1, report: 1 };

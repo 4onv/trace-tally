@@ -1,14 +1,14 @@
 {
   "name": "@4onv/trace-tally",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Compare agent tool activity without exporting the conversation.",
   "type": "module",
   "license": "MIT",
   "engines": { "node": ">=22" },
   "bin": { "trace-tally": "bin/trace-tally.mjs" },
-  "exports": { ".": "./src/parser.mjs", "./report": "./src/report.mjs" },
+  "exports": { ".": "./src/parser.mjs", "./report": "./src/report.mjs", "./recorder": "./src/recorder.mjs" },
   "scripts": { "test": "node --test", "demo": "node bin/trace-tally.mjs demo" },
-  "files": ["bin", "src", "examples", "assets", "docs", "README.md", "LICENSE", "SECURITY.md"],
+  "files": ["bin", "src", "examples", "assets", "docs", "README.md", "LICENSE", "SECURITY.md", "CHANGELOG.md"],
   "repository": { "type": "git", "url": "https://github.com/4onv/trace-tally.git" },
   "keywords": ["agent", "observability", "jsonl", "claude-code", "privacy", "developer-tools"]
 }

@@ -55,6 +55,26 @@ node bin/trace-tally.mjs compare before.jsonl after.jsonl --fail-on-more-errors
 
 That is an absolute error-count gate, not an error-rate comparison, a test of statistical significance, or evidence that either run completed its task correctly.
 
+## Record your own tool operations
+
+Version 0.2 includes a small recorder for JavaScript integrations. Wrap the operations you already run, using a fixed category instead of a custom tool name:
+
+```js
+import { createRecorder } from './src/recorder.mjs';
+import { writeFile } from 'node:fs/promises';
+
+const recorder = createRecorder();
+const result = await recorder.run('read', async () => {
+  // Call your existing tool here. Its result is returned unchanged.
+  return { value: 42 };
+});
+await writeFile('run.jsonl', recorder.toJSONL());
+```
+
+Then compare two recordings with the existing CLI. The recorder never stores operation arguments, return values, error messages, or stack traces. Concurrent calls are paired correctly, and original thrown errors are rethrown. A working synthetic example is available with `node examples/record-tools.mjs`.
+
+The recorder holds a bounded run in memory. Its raw neutral event log contains generated call IDs and timestamps; `inspect` and `compare` remove those fields from exports. See [the recorder API](docs/recorder.md) for limits and clock behavior.
+
 ## Inspect a single trace
 
 ```sh
