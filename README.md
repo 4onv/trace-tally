@@ -12,26 +12,25 @@ It is a Node.js CLI with **zero dependencies, no model API, and no server**.
 
 ## Try the demo
 
-With [Node.js 22 or newer](https://nodejs.org/) installed:
+[Download the standalone synthetic report](https://github.com/4onv/trace-tally/releases/download/v0.2.1/sample-report.html) and open it locally. No installation is needed to view it.
+
+To run your own comparisons, install the release archive with [Node.js 22 or newer](https://nodejs.org/):
 
 ```sh
-git clone https://github.com/4onv/trace-tally.git
-cd trace-tally
-node bin/trace-tally.mjs demo
+npm install -g https://github.com/4onv/trace-tally/releases/download/v0.2.1/4onv-trace-tally-0.2.1.tgz
+trace-tally demo
 ```
 
 Open `.trace-tally/demo/report.html` in a browser. The demo uses **synthetic traces**, not measured production improvements. It requires no account, dependency installation, or Docker.
 
-A generated [sample report](examples/sample-report.html) is included; download it and open it locally.
-
-This project is not published to npm. The commands here run the checked-out source directly.
+The [release](https://github.com/4onv/trace-tally/releases/tag/v0.2.1) includes SHA-256 checksums. This project is distributed through GitHub releases; the package has zero runtime dependencies. For development from a checkout, use `node bin/trace-tally.mjs` in place of `trace-tally`.
 
 ## Compare your runs
 
 Select the files you want to inspect; TraceTally does not automatically scan your home directory.
 
 ```sh
-node bin/trace-tally.mjs compare before.jsonl after.jsonl
+trace-tally compare before.jsonl after.jsonl
 ```
 
 The default output directory is `.trace-tally/comparison`:
@@ -44,23 +43,29 @@ The default output directory is `.trace-tally/comparison`:
 The default `auto` format accepts supported Claude Code JSONL records and TraceTally's neutral event schema. Select a format explicitly when needed:
 
 ```sh
-node bin/trace-tally.mjs compare before.jsonl after.jsonl --format claude --out .trace-tally/review
+trace-tally compare before.jsonl after.jsonl --format claude --out .trace-tally/review
 ```
 
 For a simple automation gate, use `--fail-on-more-errors`. It exits with code `1` when the candidate has more recorded error calls than the baseline:
 
 ```sh
-node bin/trace-tally.mjs compare before.jsonl after.jsonl --fail-on-more-errors
+trace-tally compare before.jsonl after.jsonl --fail-on-more-errors
 ```
 
 That is an absolute error-count gate, not an error-rate comparison, a test of statistical significance, or evidence that either run completed its task correctly.
 
 ## Record your own tool operations
 
-Version 0.2 includes a small recorder for JavaScript integrations. Wrap the operations you already run, using a fixed category instead of a custom tool name:
+Version 0.2 includes a small recorder for JavaScript integrations. Install the package in your project to use its API:
+
+```sh
+npm install https://github.com/4onv/trace-tally/releases/download/v0.2.1/4onv-trace-tally-0.2.1.tgz
+```
+
+Wrap the operations you already run, using a fixed category instead of a custom tool name:
 
 ```js
-import { createRecorder } from './src/recorder.mjs';
+import { createRecorder } from '@4onv/trace-tally/recorder';
 import { writeFile } from 'node:fs/promises';
 
 const recorder = createRecorder();
@@ -71,14 +76,14 @@ const result = await recorder.run('read', async () => {
 await writeFile('run.jsonl', recorder.toJSONL());
 ```
 
-Then compare two recordings with the existing CLI. The recorder never stores operation arguments, return values, error messages, or stack traces. Concurrent calls are paired correctly, and original thrown errors are rethrown. A working synthetic example is available with `node examples/record-tools.mjs`.
+Then compare two recordings with the existing CLI. The recorder never stores operation arguments, return values, error messages, or stack traces. Concurrent calls are paired correctly, and original thrown errors are rethrown. A working synthetic example is available in the source checkout with `node examples/record-tools.mjs`.
 
 The recorder holds a bounded run in memory. Its raw neutral event log contains generated call IDs and timestamps; `inspect` and `compare` remove those fields from exports. See [the recorder API](docs/recorder.md) for limits and clock behavior.
 
 ## Inspect a single trace
 
 ```sh
-node bin/trace-tally.mjs inspect session.jsonl --format auto
+trace-tally inspect session.jsonl --format auto
 ```
 
 This writes only `receipt.json` to `.trace-tally/receipt`. Use it when you need the projected data without a comparison report.
@@ -86,7 +91,7 @@ This writes only `receipt.json` to `.trace-tally/receipt`. Use it when you need 
 To rebuild the HTML from an existing comparison:
 
 ```sh
-node bin/trace-tally.mjs report .trace-tally/comparison/comparison.json --out .trace-tally/rebuilt
+trace-tally report .trace-tally/comparison/comparison.json --out .trace-tally/rebuilt
 ```
 
 ## What the comparison means
@@ -96,7 +101,7 @@ node bin/trace-tally.mjs report .trace-tally/comparison/comparison.json --out .t
 - A duration is available only when both timestamps are valid and the result is not earlier than the start. Missing timing is not zero time.
 - Adding call durations does **not** produce wall-clock runtime. Calls may overlap, and the trace may omit activity.
 - Fewer errors or tool calls may be useful evidence to investigate. They do not establish better code, a completed task, or a causal improvement.
-- Version 0.1 does not report tokens, money, model quality, or hidden reasoning.
+- TraceTally does not report tokens, money, model quality, or hidden reasoning.
 
 See [the input format and CLI reference](docs/format.md) for examples and limits.
 
@@ -111,9 +116,15 @@ One input file is treated as one run. TraceTally does not merge a multi-agent ex
 ## Development
 
 ```sh
+git clone https://github.com/4onv/trace-tally.git
+cd trace-tally
 node --test
 node bin/trace-tally.mjs demo
+npm pack --ignore-scripts
+npm run check:package -- 4onv-trace-tally-0.2.1.tgz
 ```
+
+CI installs the packed archive offline into a fresh temporary project and exercises the installed CLI and public APIs on Node 22/24, Linux and Windows.
 
 Useful contributions include carefully tested format adapters, clearer missing-data diagnostics, and representative synthetic fixtures. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
 

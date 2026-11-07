@@ -59,8 +59,9 @@ test('CLI refuses source overwrites and malformed traces without printing their 
   } finally { await rm(directory, { recursive: true, force: true, maxRetries: 3 }); }
 });
 
-test('version/help and invalid command flags have predictable exit status', () => {
-  assert.equal(cli(['--version']).stdout.trim(), '0.2.0');
+test('version/help and invalid command flags have predictable exit status', async () => {
+  const { version } = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+  assert.equal(cli(['--version']).stdout.trim(), version);
   assert.match(cli(['--help']).stdout, /Usage:/);
   assert.equal(cli(['demo', '--format', 'claude']).status, 2);
   assert.equal(cli(['inspect']).status, 2);
