@@ -12,18 +12,18 @@ It is a Node.js CLI with **zero dependencies, no model API, and no server**.
 
 ## Try the demo
 
-[Download the standalone synthetic report](https://github.com/4onv/trace-tally/releases/download/v0.2.1/sample-report.html) and open it locally. No installation is needed to view it.
+[Download the standalone synthetic report](https://github.com/4onv/trace-tally/releases/download/v0.2.2/sample-report.html) and open it locally. No installation is needed to view it.
 
 To run your own comparisons, install the release archive with [Node.js 22 or newer](https://nodejs.org/):
 
 ```sh
-npm install -g https://github.com/4onv/trace-tally/releases/download/v0.2.1/4onv-trace-tally-0.2.1.tgz
+npm install -g https://github.com/4onv/trace-tally/releases/download/v0.2.2/4onv-trace-tally-0.2.2.tgz
 trace-tally demo
 ```
 
 Open `.trace-tally/demo/report.html` in a browser. The demo uses **synthetic traces**, not measured production improvements. It requires no account, dependency installation, or Docker.
 
-The [release](https://github.com/4onv/trace-tally/releases/tag/v0.2.1) includes SHA-256 checksums. This project is distributed through GitHub releases; the package has zero runtime dependencies. For development from a checkout, use `node bin/trace-tally.mjs` in place of `trace-tally`.
+The [release](https://github.com/4onv/trace-tally/releases/tag/v0.2.2) includes SHA-256 checksums. This project is distributed through GitHub releases; the package has zero runtime dependencies. For development from a checkout, use `node bin/trace-tally.mjs` in place of `trace-tally`.
 
 ## Compare your runs
 
@@ -59,7 +59,7 @@ That is an absolute error-count gate, not an error-rate comparison, a test of st
 Version 0.2 includes a small recorder for JavaScript integrations. Install the package in your project to use its API:
 
 ```sh
-npm install https://github.com/4onv/trace-tally/releases/download/v0.2.1/4onv-trace-tally-0.2.1.tgz
+npm install https://github.com/4onv/trace-tally/releases/download/v0.2.2/4onv-trace-tally-0.2.2.tgz
 ```
 
 Wrap the operations you already run, using a fixed category instead of a custom tool name:
@@ -121,7 +121,7 @@ cd trace-tally
 node --test
 node bin/trace-tally.mjs demo
 npm pack --ignore-scripts
-npm run check:package -- 4onv-trace-tally-0.2.1.tgz
+npm run check:package -- 4onv-trace-tally-0.2.2.tgz
 ```
 
 CI installs the packed archive offline into a fresh temporary project and exercises the installed CLI and public APIs on Node 22/24, Linux and Windows.

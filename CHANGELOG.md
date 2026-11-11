@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 — 2026-11-11
+
+- Enforce the trace byte limit while reading the opened file and reject files that change size during the read.
+- Reject malformed UTF-8 and nonregular inputs, including named pipes, with a CLI error.
+
 ## 0.2.1 — 2026-11-07
 
 - Added an installable GitHub release archive, standalone synthetic report and SHA-256 checksums.

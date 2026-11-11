@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
-import { readFile, stat, mkdir, writeFile, realpath } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { open, readFile, mkdir, writeFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseTrace, compareReceipts, LIMITS } from '../src/parser.mjs';
@@ -10,9 +11,28 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const help = `TraceTally — Compare tool activity. Keep the conversation out.\n\nUsage:\n  trace-tally demo [--out .trace-tally/demo]\n  trace-tally compare BEFORE.jsonl AFTER.jsonl [--format auto|claude|events]\n  trace-tally inspect TRACE.jsonl [--format auto|claude|events]\n  trace-tally report comparison.json [--out DIRECTORY]\n\nOptions:\n  --out DIRECTORY         Write metadata-only JSON and, for comparisons, HTML\n  --format auto           Claude transcript or neutral tool events\n  --fail-on-more-errors   compare only: exit 1 when candidate error count increases\n  --help                 Show usage\n  --version              Show version\n\nNo network, model calls, dependencies, or automatic history scanning.\nExports omit original messages, tool names, inputs, outputs, paths, IDs, and dates.\nMetadata may still reveal activity patterns; review reports before sharing.\n`;
 
 async function readBounded(file) {
-  const size = (await stat(file)).size;
-  if (size > LIMITS.bytes) throw new Error('Input exceeds the 50 MiB limit.');
-  return readFile(file, 'utf8');
+  const flags = constants.O_RDONLY | (constants.O_NONBLOCK ?? 0);
+  const handle = await open(file, flags);
+  try {
+    const info = await handle.stat();
+    if (!info.isFile()) throw new Error('Trace input must be a regular file.');
+    if (info.size > LIMITS.bytes) throw new Error('Input exceeds the 50 MiB limit.');
+    const buffer = Buffer.allocUnsafe(info.size + 1);
+    let offset = 0;
+    while (offset < buffer.length) {
+      const { bytesRead } = await handle.read(buffer, offset, buffer.length - offset);
+      if (!bytesRead) break;
+      offset += bytesRead;
+    }
+    if (offset !== info.size) throw new Error('Trace changed size during read. Save a stable copy and try again.');
+    try {
+      return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(buffer.subarray(0, offset));
+    } catch {
+      throw new Error('Trace input must be valid UTF-8.');
+    }
+  } finally {
+    await handle.close();
+  }
 }
 async function protectInputs(out, names, inputs) {
   const inputPaths = await Promise.all(inputs.map(f => realpath(f)));

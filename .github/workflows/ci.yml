@@ -39,7 +39,7 @@ jobs:
       - name: Pack the installable distribution
         run: npm pack --ignore-scripts
       - name: Install the archive offline and exercise its CLI and API
-        run: npm run check:package -- 4onv-trace-tally-0.2.1.tgz
+        run: npm run check:package -- 4onv-trace-tally-0.2.2.tgz
       - name: Upload only the demonstration report
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

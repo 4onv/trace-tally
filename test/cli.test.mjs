@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm, truncate } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseTrace } from '../src/parser.mjs';
+import { parseTrace, LIMITS } from '../src/parser.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 function cli(args, cwd = root) {
@@ -13,6 +13,42 @@ function cli(args, cwd = root) {
   const result = spawnSync(process.execPath, [path.join(root, 'bin/trace-tally.mjs'), ...args], { cwd, env, encoding: 'utf8', timeout: 30000, windowsHide: true });
   assert.ifError(result.error); return result;
 }
+
+test('inspection rejects malformed UTF-8 and oversized files before writing a receipt', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'trace-tally-input-'));
+  try {
+    const trace = path.join(directory, 'trace.jsonl');
+    const out = path.join(directory, 'output');
+    const bytes = Buffer.concat([
+      Buffer.from('{"type":"tool_start","id":"1","name":"Bash","ignored":"'),
+      Buffer.from([0xff]), Buffer.from('"}\n'),
+    ]);
+    await writeFile(trace, bytes);
+    const invalid = cli(['inspect', trace, '--format', 'events', '--out', out]);
+    assert.equal(invalid.status, 2);
+    assert.match(invalid.stderr, /valid UTF-8/);
+    await truncate(trace, LIMITS.bytes + 1);
+    const oversized = cli(['inspect', trace, '--out', out]);
+    assert.equal(oversized.status, 2);
+    assert.match(oversized.stderr, /50 MiB/);
+    await assert.rejects(readFile(path.join(out, 'receipt.json')), { code: 'ENOENT' });
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('a POSIX FIFO is rejected without waiting for a writer', { skip: process.platform === 'win32' }, async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'trace-tally-fifo-'));
+  try {
+    const fifo = path.join(directory, 'trace');
+    assert.equal(spawnSync('mkfifo', [fifo], { timeout: 5000 }).status, 0);
+    const result = cli(['inspect', fifo, '--out', path.join(directory, 'output')]);
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /regular file/);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 test('CLI demo, import, comparison, and report round-trip stay content-free', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'trace-tally-cli-'));
