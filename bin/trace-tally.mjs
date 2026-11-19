@@ -5,10 +5,10 @@ import { open, readFile, mkdir, writeFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseTrace, compareReceipts, LIMITS } from '../src/parser.mjs';
-import { renderReport, projectComparison } from '../src/report.mjs';
+import { renderReport, projectComparison, projectReceipt } from '../src/report.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const help = `TraceTally — Compare tool activity. Keep the conversation out.\n\nUsage:\n  trace-tally demo [--out .trace-tally/demo]\n  trace-tally compare BEFORE.jsonl AFTER.jsonl [--format auto|claude|events]\n  trace-tally inspect TRACE.jsonl [--format auto|claude|events]\n  trace-tally report comparison.json [--out DIRECTORY]\n\nOptions:\n  --out DIRECTORY         Write metadata-only JSON and, for comparisons, HTML\n  --format auto           Claude transcript or neutral tool events\n  --fail-on-more-errors   compare only: exit 1 when candidate error count increases\n  --help                 Show usage\n  --version              Show version\n\nNo network, model calls, dependencies, or automatic history scanning.\nExports omit original messages, tool names, inputs, outputs, paths, IDs, and dates.\nMetadata may still reveal activity patterns; review reports before sharing.\n`;
+const help = `TraceTally — Compare tool activity. Keep the conversation out.\n\nUsage:\n  trace-tally demo [--out .trace-tally/demo]\n  trace-tally compare BEFORE.jsonl AFTER.jsonl [--format auto|claude|events]\n  trace-tally compare-receipts BEFORE.json AFTER.json\n  trace-tally inspect TRACE.jsonl [--format auto|claude|events]\n  trace-tally report comparison.json [--out DIRECTORY]\n\nOptions:\n  --out DIRECTORY         Write metadata-only JSON and, for comparisons, HTML\n  --format auto           Claude transcript or neutral tool events\n  --fail-on-more-errors   comparisons: exit 1 when candidate error count increases\n  --help                 Show usage\n  --version              Show version\n\nNo network, model calls, dependencies, or automatic history scanning.\nExports omit original messages, tool names, inputs, outputs, paths, IDs, and dates.\nMetadata may still reveal activity patterns; review reports before sharing.\n`;
 
 async function readBounded(file) {
   const flags = constants.O_RDONLY | (constants.O_NONBLOCK ?? 0);
@@ -64,10 +64,12 @@ async function main() {
   if (values.version) { console.log(JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8')).version); return; }
   if (values.help || !positionals.length) { console.log(help); return; }
   const [command, ...inputs] = positionals;
-  const counts = { demo: 0, compare: 2, inspect: 1, report: 1 };
+  const counts = { demo: 0, compare: 2, 'compare-receipts': 2, inspect: 1, report: 1 };
   if (!Object.hasOwn(counts, command) || inputs.length !== counts[command]) throw new Error('Invalid command or input count. See --help.');
   if (values.format && !['compare','inspect'].includes(command)) throw new Error('--format is only valid for compare and inspect.');
-  if (values['fail-on-more-errors'] && command !== 'compare') throw new Error('--fail-on-more-errors is only valid for compare.');
+  if (values['fail-on-more-errors'] && !['compare', 'compare-receipts'].includes(command)) {
+    throw new Error('--fail-on-more-errors is only valid for comparisons.');
+  }
   const format = values.format ?? 'auto';
   if (command === 'report') {
     let parsed;
@@ -84,7 +86,16 @@ async function main() {
   const demo = command === 'demo';
   const source = demo ? ['before.jsonl','after.jsonl'].map(f => path.join(root, 'examples', f)) : inputs;
   const receipts = [];
-  for (const file of source) receipts.push(parseTrace(await readBounded(file), { format, demo }));
+  for (const file of source) {
+    const text = await readBounded(file);
+    if (command === 'compare-receipts') {
+      let receipt;
+      try { receipt = JSON.parse(text); } catch { throw new Error('Invalid receipt JSON.'); }
+      receipts.push(projectReceipt(receipt));
+    } else {
+      receipts.push(parseTrace(text, { format, demo }));
+    }
+  }
   if (demo) console.log('SYNTHETIC DEMO — fabricated tool events, not an agent benchmark.');
   const comparison = await saveComparison(compareReceipts(...receipts), values.out ?? (demo ? '.trace-tally/demo' : '.trace-tally/comparison'), source);
   if (values['fail-on-more-errors'] && comparison.delta.errors > 0) process.exitCode = 1;

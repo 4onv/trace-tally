@@ -14,6 +14,32 @@ function cli(args, cwd = root) {
   assert.ifError(result.error); return result;
 }
 
+test('compare saved receipts strips added fields, recomputes totals, and preserves the error gate', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'trace-tally-receipts-'));
+  try {
+    const before = path.join(directory, 'before.json');
+    const after = path.join(directory, 'after.json');
+    const out = path.join(directory, 'report');
+    const receipt = name => readFile(path.join(root, 'examples', name), 'utf8').then(text => parseTrace(text));
+    const baseline = await receipt('after.jsonl');
+    const candidate = await receipt('before.jsonl');
+    const first = { ...candidate, privateContent: 'PRIVATE_SOURCE', summary: { errors: 9999 }, demo: true };
+    await writeFile(before, JSON.stringify(first));
+    await writeFile(after, JSON.stringify(baseline));
+    const fromReceipts = cli(['compare-receipts', before, after, '--out', out, '--fail-on-more-errors']);
+    const expectedDelta = baseline.summary.errors - candidate.summary.errors;
+    assert.equal(fromReceipts.status, Number(expectedDelta > 0), fromReceipts.stderr);
+    const output = await readFile(path.join(out, 'comparison.json'), 'utf8');
+    assert.doesNotMatch(output, /PRIVATE_SOURCE|9999/u);
+    assert.equal(JSON.parse(output).demo, true);
+    assert.equal(JSON.parse(output).delta.errors, expectedDelta);
+    assert.match(await readFile(path.join(out, 'report.html'), 'utf8'), /Synthetic/i);
+    assert.equal(cli(['compare-receipts', before, after, '--format', 'events', '--out', out]).status, 2);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('inspection rejects malformed UTF-8 and oversized files before writing a receipt', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'trace-tally-input-'));
   try {

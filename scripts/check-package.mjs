@@ -49,6 +49,9 @@ await writeFile('recorded.jsonl', raw);
   const receipt = JSON.parse(await readFile(join(scratch, 'inspected/receipt.json'), 'utf8'));
   assert.equal(receipt.summary.calls, 1);
   assert.equal(receipt.summary.successes, 1);
+  run(['compare-receipts', 'inspected/receipt.json', 'inspected/receipt.json', '--out', 'receipt-comparison']);
+  const fromReceipts = JSON.parse(await readFile(join(scratch, 'receipt-comparison/comparison.json'), 'utf8'));
+  assert.equal(fromReceipts.delta.calls, 0);
   console.log('Offline archive install, installed CLI/demo/rebuild/inspect, and all public APIs passed.');
 } finally {
   if (dirname(resolve(scratch)) !== resolve(tmpdir()) || !basename(scratch).startsWith('trace-tally-package-')) throw new Error('Unexpected cleanup path');

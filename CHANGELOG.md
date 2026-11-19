@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 — 2026-11-19
+
+- Compare two saved metadata receipts and rebuild the JSON and HTML comparison without the original transcripts.
+
 ## 0.2.2 — 2026-11-11
 
 - Enforce the trace byte limit while reading the opened file and reject files that change size during the read.
